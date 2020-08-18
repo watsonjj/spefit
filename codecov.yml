@@ -8,7 +8,8 @@ comment:
 coverage:
     ignore:
         - "setup.py"
-        - "spefit/common/.*"  # Ignore numba-vectorized functions
+        - "spefit/common/basic.py"  # Ignore numba-vectorized functions
+        - "spefit/common/stats.py"  # Ignore numba-vectorized functions
 
     status:
         project:
