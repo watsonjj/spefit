@@ -1,0 +1,12 @@
+name: spefit
+channels:
+  - conda-forge
+dependencies:
+  - anaconda-client
+  - scipy
+  - numpy
+  - matplotlib
+  - tqdm
+  - numba>=0.50.1
+  - iminuit>=1.4.9
+  - pytest
