@@ -28,6 +28,10 @@ jobs:
            environment-file: environment.yml
            python-version: ${{ matrix.python-version }}
            auto-activate-base: false
+      - name: Additional pip
+        shell: bash -l {0}
+        run: |
+          pip install codecov pytest-cov
       - name: Conda info
         shell: bash -l {0}
         run: |
@@ -41,3 +45,7 @@ jobs:
         shell: bash -l {0}
         run: |
           pytest -vvvv spefit
+      - name: After success
+        shell: bash -l {0}
+        run: |
+          codecov
