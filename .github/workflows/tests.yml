@@ -45,7 +45,7 @@ jobs:
         shell: bash -l {0}
         run: |
           pytest -vvvv spefit
-      - name: After success
+      - name: Codecov
         shell: bash -l {0}
         run: |
-          codecov
+          codecov -t ${{ secrets.CODECOV_TOKEN }}
