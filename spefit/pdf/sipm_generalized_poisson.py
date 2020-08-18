@@ -4,13 +4,13 @@ import numpy as np
 from numba import njit, vectorize, float64, int64
 from math import exp, sqrt, lgamma, log
 
-__all__ = ["SiPMGeneralizedPoisson"]
+__all__ = ["SiPMGeneralizedPoisson", "generalized_poisson", "sipm_generalized_poisson"]
 
 
 class SiPMGeneralizedPoisson(PDF):
     def __init__(self, n_illuminations: int):
-        func = sipm_generalized_poisson
-        param = dict(
+        function = sipm_generalized_poisson
+        parameters = dict(
             pe0=PDFParameter(initial=0, limits=(-2, 2)),
             pe0_sigma=PDFParameter(initial=0.1, limits=(0, 2)),
             pe=PDFParameter(initial=1, limits=(-2, 3)),
@@ -18,7 +18,7 @@ class SiPMGeneralizedPoisson(PDF):
             opct=PDFParameter(initial=0.2, limits=(0, 1)),
             lambda_=PDFParameter(initial=0.7, limits=(0, 5), multi=True),
         )
-        super().__init__(n_illuminations=n_illuminations, function=func, parameters=param)
+        super().__init__(n_illuminations, function, parameters)
 
 
 @vectorize([float64(int64, float64, float64)], fastmath=True)
@@ -40,8 +40,8 @@ def generalized_poisson(k, mu, opct):
     -------
     probability : float
     """
-    mu_dash = (mu + k * opct)
-    return mu * exp((k-1) * log(mu_dash) - mu_dash - lgamma(k+1))
+    mu_dash = mu + k * opct
+    return mu * exp((k - 1) * log(mu_dash) - mu_dash - lgamma(k + 1))
 
 
 @njit(fastmath=True)

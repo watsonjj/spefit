@@ -36,14 +36,14 @@ def test_pdf_class():
     assert pdf.function == normal_pdf
     assert pdf.n_illuminations == 1
     assert len(pdf.parameters) == 2
-    assert pdf.parameters['sigma'].initial == 0.1
+    assert pdf.parameters["sigma"].initial == 0.1
     assert np.array_equal(pdf._lookup, np.array([[0, 1]]))
 
     pdf = PDF(2, normal_pdf, parameters)
     assert pdf.function == normal_pdf
     assert pdf.n_illuminations == 2
     assert len(pdf.parameters) == 2
-    assert pdf.parameters['sigma'].initial == 0.1
+    assert pdf.parameters["sigma"].initial == 0.1
     assert np.array_equal(pdf._lookup, np.array([[0, 1], [0, 1]]))
 
     parameters = dict(
@@ -54,8 +54,8 @@ def test_pdf_class():
     assert pdf.function == normal_pdf
     assert pdf.n_illuminations == 2
     assert len(pdf.parameters) == 3
-    assert pdf.parameters['sigma0'].initial == 0.1
-    assert pdf.parameters['sigma1'].initial == 0.1
+    assert pdf.parameters["sigma0"].initial == 0.1
+    assert pdf.parameters["sigma1"].initial == 0.1
     assert np.array_equal(pdf._lookup, np.array([[0, 1], [0, 2]]))
 
     parameters = dict(
@@ -66,8 +66,8 @@ def test_pdf_class():
     assert pdf.function == normal_pdf
     assert pdf.n_illuminations == 2
     assert len(pdf.parameters) == 4
-    assert pdf.parameters['sigma0'].initial == 0.1
-    assert pdf.parameters['sigma1'].initial == 0.1
+    assert pdf.parameters["sigma0"].initial == 0.1
+    assert pdf.parameters["sigma1"].initial == 0.1
     assert np.array_equal(pdf._lookup, np.array([[0, 2], [1, 3]]))
     key_array = np.array(list(pdf.parameters.keys()))
     assert np.array_equal(key_array[pdf._lookup[0]], ["mean0", "sigma0"])
@@ -114,28 +114,28 @@ def test_update_parameters_initial():
         sigma=PDFParameter(initial=0.1, limits=(0, 2)),
     )
     pdf = PDF(2, normal_pdf, parameters)
-    assert pdf.parameters['mean'].initial == 0
-    assert pdf.parameters['sigma'].initial == 0.1
+    assert pdf.parameters["mean"].initial == 0
+    assert pdf.parameters["sigma"].initial == 0.1
     pdf.update_parameters_initial(mean=2, sigma=0.4)
-    assert pdf.parameters['mean'].initial == 2
-    assert pdf.parameters['sigma'].initial == 0.4
+    assert pdf.parameters["mean"].initial == 2
+    assert pdf.parameters["sigma"].initial == 0.4
 
     parameters = dict(
         mean=PDFParameter(initial=0, limits=(-2, 2)),
         sigma=PDFParameter(initial=0.1, limits=(0, 2), multi=True),
     )
     pdf = PDF(2, normal_pdf, parameters)
-    assert pdf.parameters['mean'].initial == 0
-    assert pdf.parameters['sigma0'].initial == 0.1
-    assert pdf.parameters['sigma1'].initial == 0.1
+    assert pdf.parameters["mean"].initial == 0
+    assert pdf.parameters["sigma0"].initial == 0.1
+    assert pdf.parameters["sigma1"].initial == 0.1
     pdf.update_parameters_initial(mean=2, sigma=0.4)
-    assert pdf.parameters['mean'].initial == 2
-    assert pdf.parameters['sigma0'].initial == 0.4
-    assert pdf.parameters['sigma1'].initial == 0.4
+    assert pdf.parameters["mean"].initial == 2
+    assert pdf.parameters["sigma0"].initial == 0.4
+    assert pdf.parameters["sigma1"].initial == 0.4
     pdf.update_parameters_initial(mean=2, sigma0=0.4, sigma1=0.5)
-    assert pdf.parameters['mean'].initial == 2
-    assert pdf.parameters['sigma0'].initial == 0.4
-    assert pdf.parameters['sigma1'].initial == 0.5
+    assert pdf.parameters["mean"].initial == 2
+    assert pdf.parameters["sigma0"].initial == 0.4
+    assert pdf.parameters["sigma1"].initial == 0.5
 
     with pytest.raises(ValueError):
         pdf.update_parameters_initial(mean0=2, sigma0=0.4, sigma1=0.5)
@@ -150,19 +150,19 @@ def test_update_parameters_limits():
         sigma=PDFParameter(initial=0.1, limits=(0, 2)),
     )
     pdf = PDF(1, normal_pdf, parameters)
-    assert pdf.parameters['mean'].limits == (-2, 2)
-    assert pdf.parameters['sigma'].limits == (0, 2)
+    assert pdf.parameters["mean"].limits == (-2, 2)
+    assert pdf.parameters["sigma"].limits == (0, 2)
     pdf.update_parameters_limits(mean=(-3, 3), sigma=(0, 4))
-    assert pdf.parameters['mean'].limits == (-3, 3)
-    assert pdf.parameters['sigma'].limits == (0, 4)
+    assert pdf.parameters["mean"].limits == (-3, 3)
+    assert pdf.parameters["sigma"].limits == (0, 4)
 
     # Test mutable
     limit = [2, 3]
     # noinspection PyTypeChecker
     pdf.update_parameters_limits(mean=limit)
-    assert tuple(pdf.parameters['mean'].limits) == (2, 3)
+    assert tuple(pdf.parameters["mean"].limits) == (2, 3)
     limit[0] = 1
-    assert tuple(pdf.parameters['mean'].limits) == (2, 3)
+    assert tuple(pdf.parameters["mean"].limits) == (2, 3)
 
 
 def test_update_parameters_fixed():
@@ -171,11 +171,11 @@ def test_update_parameters_fixed():
         sigma=PDFParameter(initial=0.1, limits=(0, 2)),
     )
     pdf = PDF(1, normal_pdf, parameters)
-    assert pdf.parameters['mean'].fixed is False
-    assert pdf.parameters['sigma'].fixed is False
+    assert pdf.parameters["mean"].fixed is False
+    assert pdf.parameters["sigma"].fixed is False
     pdf.update_parameters_fixed(mean=True, sigma=True)
-    assert pdf.parameters['mean'].fixed is True
-    assert pdf.parameters['sigma'].fixed is True
+    assert pdf.parameters["mean"].fixed is True
+    assert pdf.parameters["sigma"].fixed is True
 
 
 # noinspection DuplicatedCode
@@ -184,7 +184,7 @@ def test_prepare_multi_illumination_parameters():
         mean=PDFParameter(initial=0, limits=(-2, 2)),
         sigma=PDFParameter(initial=0.1, limits=(0, 2)),
     )
-    results = PDF._prepare_multi_illumination_parameters(parameters, 1)
+    results = PDF._prepare_parameters(parameters, 1)
     parameters, is_multi, lookup = results
     assert len(parameters) == 2
     assert len(is_multi) == 2
@@ -195,7 +195,7 @@ def test_prepare_multi_illumination_parameters():
         mean=PDFParameter(initial=0, limits=(-2, 2), multi=True),
         sigma=PDFParameter(initial=0.1, limits=(0, 2), multi=True),
     )
-    results = PDF._prepare_multi_illumination_parameters(parameters, 1)
+    results = PDF._prepare_parameters(parameters, 1)
     parameters, is_multi, lookup = results
     assert len(parameters) == 2
     assert len(is_multi) == 2
@@ -206,7 +206,7 @@ def test_prepare_multi_illumination_parameters():
         mean=PDFParameter(initial=0, limits=(-2, 2), multi=True),
         sigma=PDFParameter(initial=0.1, limits=(0, 2), multi=True),
     )
-    results = PDF._prepare_multi_illumination_parameters(parameters, 2)
+    results = PDF._prepare_parameters(parameters, 2)
     parameters, is_multi, lookup = results
     assert len(parameters) == 4
     assert len(is_multi) == 2

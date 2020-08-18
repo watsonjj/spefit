@@ -14,27 +14,33 @@ def minimize_with_iminuit(cost: Cost) -> (Dict[str, float], Dict[str, float]):
     """ Minimize the Cost definition using iminuit """
     # noinspection PyArgumentList
     m0 = iminuit.Minuit(
-        cost, **cost.iminuit_kwargs,
+        cost,
+        **cost.iminuit_kwargs,
         name=cost.parameter_names,
         errordef=cost.errordef,
         print_level=0,
         pedantic=False,
         throw_nan=True,
-        use_array_call=True
+        use_array_call=True,
     )
     m0.migrad()
 
     # Attempt to run HESSE to compute parabolic errors.
     with warnings.catch_warnings():
-        warnings.simplefilter('ignore', iminuit.util.HesseFailedWarning)
+        warnings.simplefilter("ignore", iminuit.util.HesseFailedWarning)
         m0.hesse()
 
     return dict(m0.values), dict(m0.errors)
 
 
 class CameraFitter:
-    def __init__(self, pdf: PDF, n_bins: int, range_: Tuple[float, float],
-                 cost_name: str = "BinnedNLL"):
+    def __init__(
+        self,
+        pdf: PDF,
+        n_bins: int,
+        range_: Tuple[float, float],
+        cost_name: str = "BinnedNLL",
+    ):
         """
         Convenience class for fitting the charge distributions measured in
         multiple pixels of a camera
@@ -104,20 +110,23 @@ class CameraFitter:
             scores = dict(
                 chi2=cost.chi2(values_array),
                 reduced_chi2=cost.reduced_chi2(values_array),
-                p_value=cost.p_value(values_array)
+                p_value=cost.p_value(values_array),
             )
         except ValueError:
             scores = dict(chi2=np.nan, reduced_chi2=np.nan, p_value=np.nan)
 
         # Obtain resulting arrays for plotting purposes
-        fit_x = np.linspace(self._range[0], self._range[1], self._n_bins*10)
-        arrays = [dict(
-            charge_hist_x=charges[i].between,
-            charge_hist_y=charges[i].hist,
-            charge_hist_edges=charges[i].edges,
-            fit_x=fit_x,
-            fit_y=self._pdf(fit_x, values_array, i)
-        ) for i in range(n_illuminations)]
+        fit_x = np.linspace(self._range[0], self._range[1], self._n_bins * 10)
+        arrays = []
+        for i in range(n_illuminations):
+            d = dict(
+                charge_hist_x=charges[i].between,
+                charge_hist_y=charges[i].hist,
+                charge_hist_edges=charges[i].edges,
+                fit_x=fit_x,
+                fit_y=self._pdf(fit_x, values_array, i),
+            )
+            arrays.append(d)
 
         self.pixel_values[pixel] = values
         self.pixel_errors[pixel] = errors

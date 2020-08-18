@@ -10,7 +10,16 @@ import numpy as np
 from abc import abstractmethod, ABCMeta
 from scipy.stats import distributions
 
-__all__ = ["Cost", "UnbinnedNLL", "BinnedNLL", "LeastSquares"]
+__all__ = [
+    "_sum_log_x",
+    "_bin_nll",
+    "_total_binned_nll",
+    "_least_squares",
+    "Cost",
+    "UnbinnedNLL",
+    "BinnedNLL",
+    "LeastSquares",
+]
 
 
 @njit(fastmath=True)
@@ -84,7 +93,7 @@ def _least_squares(f_y, d_y):
     scale = np.sum(d_y) / np.sum(f_y)
     f_ys = f_y * scale
     gt5 = d_y > 5
-    return np.sum((d_y[gt5] - f_ys[gt5])**2/d_y[gt5])
+    return np.sum((d_y[gt5] - f_ys[gt5]) ** 2 / d_y[gt5])
 
 
 class Cost(metaclass=ABCMeta):
@@ -172,6 +181,7 @@ class UnbinnedNLL(Cost):
     Unbinned negative log-likelihood. Slower than the BinnedNLL, but no
     features are lost due to the binning.
     """
+
     errordef = 0.5
 
     def __call__(self, parameters):
@@ -200,6 +210,7 @@ class BinnedNLL(Cost):
     """
     Binned negative log-likelihood, formulated with the likelihood ratio
     """
+
     errordef = 0.5
 
     def __call__(self, parameters):
@@ -223,6 +234,7 @@ class LeastSquares(Cost):
     """
     Least squares/chi-square (for Poisson-distributed bin counts)
     """
+
     errordef = 1
 
     def __call__(self, parameters):

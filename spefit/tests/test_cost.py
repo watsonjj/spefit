@@ -1,23 +1,31 @@
-from spefit.cost import _sum_log_x, _bin_nll, _total_binned_nll, \
-    _least_squares, UnbinnedNLL, BinnedNLL, LeastSquares, Cost
+from spefit.cost import (
+    _sum_log_x,
+    _bin_nll,
+    _total_binned_nll,
+    _least_squares,
+    UnbinnedNLL,
+    BinnedNLL,
+    LeastSquares,
+    Cost,
+)
 import numpy as np
 import pytest
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope="module")
 def incorrect():
     return np.array([0.6, 0.3, 0.4])
 
 
 def test_sum_log_x():
     x = np.linspace(-100, 100, 1000)
-    with np.errstate(invalid='ignore'):
+    with np.errstate(invalid="ignore"):
         np.testing.assert_allclose(_sum_log_x(x), np.sum(np.log(x)))
 
 
 def test_bin_nll():
     assert _bin_nll(2, 0) == 2
-    with np.errstate(divide='ignore', invalid='ignore'):
+    with np.errstate(divide="ignore", invalid="ignore"):
         assert np.array_equal(_bin_nll(np.ones(10), np.zeros(10)), np.ones(10))
     assert _bin_nll(2, 1) < 2
 

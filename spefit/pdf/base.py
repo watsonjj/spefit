@@ -6,8 +6,13 @@ __all__ = ["PDFParameter", "PDF"]
 
 
 class PDFParameter:
-    def __init__(self, initial: float, limits: Tuple[float, float],
-                 fixed: bool = False, multi: bool = False):
+    def __init__(
+        self,
+        initial: float,
+        limits: Tuple[float, float],
+        fixed: bool = False,
+        multi: bool = False,
+    ):
         """
         Parameter of the PDF
 
@@ -61,8 +66,12 @@ class PDFParameter:
 
 
 class PDF:
-    def __init__(self, n_illuminations: int, function: Callable = None,
-                 parameters: Dict[str, PDFParameter] = None):
+    def __init__(
+        self,
+        n_illuminations: int,
+        function: Callable = None,
+        parameters: Dict[str, PDFParameter] = None,
+    ):
         """
         Defines a function to be fit, and its corresponding parameters
 
@@ -81,7 +90,7 @@ class PDF:
 
         self._n_illuminations = n_illuminations
         self._function = function
-        result = self._prepare_multi_illumination_parameters(parameters, n_illuminations)
+        result = self._prepare_parameters(parameters, n_illuminations)
         self._parameters, self._parameter_is_multi, self._lookup = result
 
     def __call__(self, x: np.ndarray, parameters: np.ndarray, i_illumination: int):
@@ -135,7 +144,7 @@ class PDF:
             self._update_parameter("fixed", name, value)
 
     @staticmethod
-    def _prepare_multi_illumination_parameters(parameters, n_illuminations):
+    def _prepare_parameters(parameters, n_illuminations):
         parameter_dict = {}
         parameter_is_multi = {}
         lookup = np.zeros((n_illuminations, len(parameters)), dtype=np.int)

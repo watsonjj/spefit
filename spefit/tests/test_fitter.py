@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope="module")
 def charge_arrays(example_charges):
     n_pixels = 10
     return [c.values[:, None] * np.ones((1, n_pixels)) for c in example_charges]
@@ -38,10 +38,10 @@ def test_camera_fitter(CostSubclass, example_pdf, example_params, charge_arrays)
 
     np.testing.assert_allclose(values_array, example_params, rtol=1e-2)
     assert (errors_array > 0).all()
-    p_value = fitter.pixel_scores[0]['p_value']
+    p_value = fitter.pixel_scores[0]["p_value"]
     if not np.isnan(p_value):
-        assert fitter.pixel_scores[0]['p_value'] > 0.01
-    assert fitter.pixel_arrays[0][0]['charge_hist_y'].size == 60
+        assert fitter.pixel_scores[0]["p_value"] > 0.01
+    assert fitter.pixel_arrays[0][0]["charge_hist_y"].size == 60
 
 
 # noinspection DuplicatedCode

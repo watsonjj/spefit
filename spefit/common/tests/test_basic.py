@@ -13,7 +13,7 @@ def test_binom():
 def test_xlogy():
     x = np.arange(100) - 10
     y = np.arange(100) - 10
-    with np.errstate(divide='ignore', invalid='ignore'):
+    with np.errstate(divide="ignore", invalid="ignore"):
         assert_allclose(xlogy(x, y), scipy_special.xlogy(x, y))
         assert_allclose(xlogy(x, np.nan), scipy_special.xlogy(x, np.nan))
         assert_allclose(xlogy(np.nan, y), scipy_special.xlogy(np.nan, y))

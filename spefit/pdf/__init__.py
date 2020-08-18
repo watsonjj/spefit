@@ -8,5 +8,5 @@ __all__ = [
     "PDFParameter",
     "PMTSingleGaussian",
     "SiPMGentile",
-    "SiPMGeneralizedPoisson"
+    "SiPMGeneralizedPoisson",
 ]

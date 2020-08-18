@@ -4,13 +4,13 @@ from spefit.common.basic import binom
 from numba import njit
 from math import exp, pow, sqrt
 
-__all__ = ["SiPMGentile"]
+__all__ = ["SiPMGentile", "sipm_gentile"]
 
 
 class SiPMGentile(PDF):
     def __init__(self, n_illuminations: int):
-        func = sipm_gentile
-        param = dict(
+        function = sipm_gentile
+        parameters = dict(
             eped=PDFParameter(initial=0, limits=(-2, 2)),
             eped_sigma=PDFParameter(initial=0.1, limits=(0, 2)),
             pe=PDFParameter(initial=1, limits=(-2, 3)),
@@ -18,7 +18,7 @@ class SiPMGentile(PDF):
             opct=PDFParameter(initial=0.2, limits=(0, 1)),
             lambda_=PDFParameter(initial=0.7, limits=(0, 5), multi=True),
         )
-        super().__init__(n_illuminations=n_illuminations, function=func, parameters=param)
+        super().__init__(n_illuminations, function, parameters)
 
 
 @njit(fastmath=True)
@@ -60,7 +60,7 @@ def sipm_gentile(x, eped, eped_sigma, pe, pe_sigma, opct, lambda_):
     # Loop over the possible total number of cells fired
     for k in range(1, 100):
         pk = 0
-        for j in range(1, k+1):
+        for j in range(1, k + 1):
             pj = poisson(j, lambda_)  # Probability for j initial fired cells
 
             # Skip insignificant probabilities
@@ -70,7 +70,7 @@ def sipm_gentile(x, eped, eped_sigma, pe, pe_sigma, opct, lambda_):
             # Sum the probability from the possible combinations which result
             # in a total of k fired cells to get the total probability of k
             # fired cells
-            pk += pj * pow(1-opct, j) * pow(opct, k-j) * binom(k-1, j-1)
+            pk += pj * pow(1 - opct, j) * pow(opct, k - j) * binom(k - 1, j - 1)
 
         # Skip insignificant probabilities
         if pk > pk_max:

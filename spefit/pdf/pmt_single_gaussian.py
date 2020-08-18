@@ -3,20 +3,20 @@ from spefit.common.stats import poisson, normal_pdf
 from numba import njit
 from math import exp, sqrt
 
-__all__ = ["PMTSingleGaussian"]
+__all__ = ["PMTSingleGaussian", "pmt_single_gaussian"]
 
 
 class PMTSingleGaussian(PDF):
     def __init__(self, n_illuminations: int):
-        func = pmt_single_gaussian
-        param = dict(
+        function = pmt_single_gaussian
+        parameters = dict(
             eped=PDFParameter(initial=0, limits=(-2, 2)),
             eped_sigma=PDFParameter(initial=0.1, limits=(0, 2)),
             pe=PDFParameter(initial=1, limits=(-2, 3)),
             pe_sigma=PDFParameter(initial=0.1, limits=(0, 2)),
             lambda_=PDFParameter(initial=0.7, limits=(0, 5), multi=True),
         )
-        super().__init__(n_illuminations=n_illuminations, function=func, parameters=param)
+        super().__init__(n_illuminations, function, parameters)
 
 
 @njit(fastmath=True, parallel=True)

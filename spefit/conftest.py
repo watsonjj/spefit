@@ -5,7 +5,7 @@ import pytest
 import numpy as np
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 def example_pdf():
     parameters = dict(
         mean=PDFParameter(initial=0, limits=(-2, 2)),
@@ -14,12 +14,12 @@ def example_pdf():
     return PDF(2, normal_pdf, parameters)
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 def example_params():
     return np.array([0.5, 0.3, 0.4])
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 def example_charges(example_pdf, example_params):
     charges = []
     rng = np.random.default_rng(seed=1)
