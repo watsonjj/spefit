@@ -48,5 +48,6 @@ jobs:
       - name: Codecov
         shell: bash -l {0}
         run: |
+          export NUMBA_DISABLE_JIT=1
           pytest --cov=./ --cov-report=xml
           codecov -t ${{ secrets.CODECOV_TOKEN }}
