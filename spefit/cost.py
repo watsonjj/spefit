@@ -196,6 +196,7 @@ class UnbinnedNLL(Cost):
 
 class BinnedNLL(Cost):
     """Binned negative log-likelihood, formulated with the likelihood ratio"""
+
     errordef = 0.5
 
     def __call__(self, parameters):
@@ -217,6 +218,7 @@ class BinnedNLL(Cost):
 
 class LeastSquares(Cost):
     """Least squares/chi-square (for Poisson-distributed bin counts)"""
+
     errordef = 1
 
     def __call__(self, parameters):
