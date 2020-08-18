@@ -17,7 +17,8 @@ def test_sum_log_x():
 
 def test_bin_nll():
     assert _bin_nll(2, 0) == 2
-    assert np.array_equal(_bin_nll(np.ones(10), np.zeros(10)), np.ones(10))
+    with np.errstate(divide='ignore', invalid='ignore'):
+        assert np.array_equal(_bin_nll(np.ones(10), np.zeros(10)), np.ones(10))
     assert _bin_nll(2, 1) < 2
 
 
