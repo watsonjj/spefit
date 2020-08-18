@@ -1,6 +1,7 @@
 name: spefit
 channels:
   - conda-forge
+  - numba
 dependencies:
   - anaconda-client
   - scipy
@@ -10,3 +11,5 @@ dependencies:
   - numba>=0.50.1
   - iminuit>=1.4.9
   - pytest
+  - tbb  # numba threading
+  - icc_rt  # Intel SVML
