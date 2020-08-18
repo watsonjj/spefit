@@ -13,8 +13,7 @@ class PDFParameter:
         fixed: bool = False,
         multi: bool = False,
     ):
-        """
-        Parameter of the PDF
+        """Parameter of the PDF
 
         TODO: Convert to a dataclass when 3.7 is adopted as minimum Python version
 
@@ -72,8 +71,7 @@ class PDF:
         function: Callable = None,
         parameters: Dict[str, PDFParameter] = None,
     ):
-        """
-        Defines a function to be fit, and its corresponding parameters
+        """Defines a function to be fit, and its corresponding parameters
 
         Parameters
         ----------
@@ -94,8 +92,7 @@ class PDF:
         self._parameters, self._parameter_is_multi, self._lookup = result
 
     def __call__(self, x: np.ndarray, parameters: np.ndarray, i_illumination: int):
-        """
-        Evaluates the PDF of the fit function for a particular illumination
+        """Evaluates the PDF of the fit function for a particular illumination
 
         Parameters
         ----------
@@ -114,8 +111,7 @@ class PDF:
         return self._function(x, *self._lookup_parameters(parameters, i_illumination))
 
     def _lookup_parameters(self, parameters: np.ndarray, i_illumination: int):
-        """
-        Extract the correct parameters from the array that correspond to the
+        """Extract the correct parameters from the array that correspond to the
         current illumination
         """
         return parameters[self._lookup[i_illumination]]

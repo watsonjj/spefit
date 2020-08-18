@@ -1,4 +1,4 @@
-"""Common minimization cost functions altered to handle n_illuminations"""
+"""Common minimization cost functions altered to handle n_illuminations."""
 from spefit.pdf.base import PDF
 from spefit.common.basic import xlogy
 from spefit.container import ChargeContainer
@@ -132,7 +132,6 @@ class Cost(metaclass=ABCMeta):
         -------
         float
         """
-        pass
 
     @property
     def iminuit_kwargs(self):

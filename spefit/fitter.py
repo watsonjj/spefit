@@ -79,7 +79,6 @@ class CameraFitter:
 
         Placeholder method for potential overriding by a subclass
         """
-        pass
 
     def _apply_pixel(self, charge_arrays: List[np.ndarray], pixel: int):
         """

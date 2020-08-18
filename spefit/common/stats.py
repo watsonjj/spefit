@@ -11,8 +11,7 @@ SQRT2PI = sqrt(2.0 * pi)
 
 @vectorize([float64(float64, float64)], fastmath=True)
 def poisson_logpmf(k, mu):
-    """
-    Poisson log-PMF, using a definition that is mathematically
+    """Poisson log-PMF, using a definition that is mathematically
     equivalent but numerically stable to avoid arithmetic overflow.
 
     Source: https://en.wikipedia.org/wiki/Poisson_distribution
@@ -22,8 +21,7 @@ def poisson_logpmf(k, mu):
 
 @vectorize([float64(int64, float64)], fastmath=True)
 def poisson(k, mu):
-    """
-    Poisson PMF, using a definition that is mathematically
+    """Poisson PMF, using a definition that is mathematically
     equivalent but numerically stable to avoid arithmetic overflow.
 
     The result is the probability of observing k events for an average number
@@ -36,8 +34,7 @@ def poisson(k, mu):
 
 @vectorize([float64(float64, float64, float64)], fastmath=True)
 def normal_pdf(x, mean, std_deviation):
-    """
-    Normal PDF
+    """Normal PDF
 
     The result is the probability of observing a value at a position x, for a
     normal distribution described by a mean m and a standard deviation s.
