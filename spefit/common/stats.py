@@ -1,6 +1,4 @@
-"""
-Vectorized forms of common PDFs and PMFs
-"""
+"""Vectorized forms of common PDFs and PMFs"""
 
 from spefit.common.basic import xlogy
 from numba import vectorize, int64, float64

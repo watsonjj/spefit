@@ -1,3 +1,4 @@
+"""spefit - Fitting of Single Photoelectron Spectra"""
 from .container import ChargeContainer
 from .cost import Cost, UnbinnedNLL, BinnedNLL, LeastSquares
 from .pdf import (

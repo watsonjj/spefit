@@ -8,6 +8,14 @@ __all__ = ["PMTSingleGaussian", "pmt_single_gaussian"]
 
 class PMTSingleGaussian(PDF):
     def __init__(self, n_illuminations: int):
+        """SPE PDF for a Photomultiplier Tube consisting of a single gaussian
+        per photoelectron
+
+        Parameters
+        ----------
+        n_illuminations : int
+            Number of illuminations to simultaneously fit
+        """
         function = pmt_single_gaussian
         parameters = dict(
             eped=PDFParameter(initial=0, limits=(-2, 2)),
@@ -21,8 +29,7 @@ class PMTSingleGaussian(PDF):
 
 @njit(fastmath=True, parallel=True)
 def pmt_single_gaussian(x, eped, eped_sigma, pe, pe_sigma, lambda_):
-    """
-    Simple description of the SPE spectrum PDF for a traditional
+    """Simple description of the SPE spectrum PDF for a traditional
     Photomultiplier Tube, with the underlying 1 photoelectron PDF described by
     a single gaussian
 

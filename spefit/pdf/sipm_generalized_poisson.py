@@ -9,6 +9,14 @@ __all__ = ["SiPMGeneralizedPoisson", "generalized_poisson", "sipm_generalized_po
 
 class SiPMGeneralizedPoisson(PDF):
     def __init__(self, n_illuminations: int):
+        """SPE PDF for a SiPM utilising a modified Poisson to describe the
+        optical crosstalk
+
+        Parameters
+        ----------
+        n_illuminations : int
+            Number of illuminations to simultaneously fit
+        """
         function = sipm_generalized_poisson
         parameters = dict(
             pe0=PDFParameter(initial=0, limits=(-2, 2)),
@@ -23,8 +31,7 @@ class SiPMGeneralizedPoisson(PDF):
 
 @vectorize([float64(int64, float64, float64)], fastmath=True)
 def generalized_poisson(k, mu, opct):
-    """
-    Generalized Poisson probabilities for a given mean number per event
+    """Generalized Poisson probabilities for a given mean number per event
     and per opct event.
 
     Parameters
@@ -46,8 +53,7 @@ def generalized_poisson(k, mu, opct):
 
 @njit(fastmath=True)
 def sipm_generalized_poisson(x, pe0, pe0_sigma, pe, pe_sigma, opct, lambda_):
-    """
-    SPE spectrum PDF for a SiPM using Gaussian peaks with amplitudes given by
+    """SPE spectrum PDF for a SiPM using Gaussian peaks with amplitudes given by
     a modified Poisson formula
 
     TODO: Explanation/derivation

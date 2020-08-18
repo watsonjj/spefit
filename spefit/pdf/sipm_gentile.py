@@ -2,13 +2,22 @@ from spefit.pdf.base import PDF, PDFParameter
 from spefit.common.stats import poisson, normal_pdf
 from spefit.common.basic import binom
 from numba import njit
-from math import exp, pow, sqrt
+from math import exp, sqrt
 
 __all__ = ["SiPMGentile", "sipm_gentile"]
 
 
 class SiPMGentile(PDF):
     def __init__(self, n_illuminations: int):
+        """SPE PDF for a SiPM. Optical crosstalk is included by considering all
+        the possible combinations that could result in N p.e. (as described in
+        Gentile 2010 http://adsabs.harvard.edu/abs/2010arXiv1006.3263G)
+
+        Parameters
+        ----------
+        n_illuminations : int
+            Number of illuminations to simultaneously fit
+        """
         function = sipm_gentile
         parameters = dict(
             eped=PDFParameter(initial=0, limits=(-2, 2)),
@@ -23,9 +32,9 @@ class SiPMGentile(PDF):
 
 @njit(fastmath=True)
 def sipm_gentile(x, eped, eped_sigma, pe, pe_sigma, opct, lambda_):
-    """
-    PDF for the SPE spectrum of a SiPM as defined in Gentile 2010
+    """PDF for the SPE spectrum of a SiPM as defined in Gentile 2010
     http://adsabs.harvard.edu/abs/2010arXiv1006.3263G
+    (Afterpulsing is assumed to be negligible)
 
     Parameters
     ----------

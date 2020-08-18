@@ -11,7 +11,7 @@ __all__ = ["minimize_with_iminuit", "CameraFitter"]
 
 
 def minimize_with_iminuit(cost: Cost) -> (Dict[str, float], Dict[str, float]):
-    """ Minimize the Cost definition using iminuit """
+    """Minimize the Cost definition using iminuit"""
     # noinspection PyArgumentList
     m0 = iminuit.Minuit(
         cost,
@@ -41,8 +41,7 @@ class CameraFitter:
         range_: Tuple[float, float],
         cost_name: str = "BinnedNLL",
     ):
-        """
-        Convenience class for fitting the charge distributions measured in
+        """Convenience class for fitting the charge distributions measured in
         multiple pixels of a camera
 
         Result of the fit for each pixel can be accessed from the self.pixel_*

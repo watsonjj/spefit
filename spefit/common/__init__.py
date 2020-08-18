@@ -1,3 +1,1 @@
-"""
-Common mathematical Formulae,, vectorized with numba
-"""
+"""Common mathematical Formulae,, vectorized with numba"""

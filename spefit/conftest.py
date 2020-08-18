@@ -1,4 +1,4 @@
-""" global pytest fixtures"""
+"""global pytest fixtures"""
 from spefit import PDF, PDFParameter, ChargeContainer
 from spefit.common.stats import normal_pdf
 import pytest

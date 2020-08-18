@@ -166,7 +166,7 @@ class PDF:
 
     @property
     def function(self) -> Callable:
-        """ Provides access to internal PDF function """
+        """Provides access to internal PDF function"""
         return self._function
 
     @property
@@ -200,11 +200,8 @@ class PDF:
 
     @classmethod
     def from_name(cls, name: str, *args, **kwargs):
-        """
-        Factory method to obtain subclass by name
-        """
+        """Factory method to obtain subclass by name"""
         for subclass in cls.__subclasses__():
             if subclass.__name__ == name:
                 return subclass(*args, **kwargs)
-        else:
-            raise ValueError(f"No PDF class with the name: {name}")
+        raise ValueError(f"No PDF class with the name: {name}")
