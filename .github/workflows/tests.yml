@@ -1,0 +1,43 @@
+on:
+  push:
+    branches:
+    - '*'
+  pull_request:
+    branches:
+    - '*'
+
+name: tests
+
+jobs:
+  build:
+    name: TEST (${{ matrix.python-version }}, ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ['ubuntu-latest', 'macos-latest']
+        python-version: ['3.6', '3.7']
+    steps:
+      - name: Setup checkout
+        uses: actions/checkout@v2
+      - name: Setup miniconda
+        uses: goanpeca/setup-miniconda@v1
+        with:
+           auto-update-conda: true
+           activate-environment: spefit
+           environment-file: environment.yml
+           python-version: ${{ matrix.python-version }}
+           auto-activate-base: false
+      - name: Conda info
+        shell: bash -l {0}
+        run: |
+          conda info
+          conda list
+      - name: Install
+        shell: bash -l {0}
+        run: |
+          python setup.py develop
+      - name: Test
+        shell: bash -l {0}
+        run: |
+          pytest -vvvv spefit
