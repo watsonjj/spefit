@@ -6,7 +6,7 @@ Optimised framework for the fitting of [Single Photoelectron Spectra](https://gi
 
 * Supported Python versions: 3.6+
 * Supported platforms: Linux, OSX
-* Source: https://github.com/watsonjj/spefit
+* Source: <https://github.com/watsonjj/spefit>
 * License: [BSD-3-Clause](LICENSE)
 * Citation: _pending_
 
