@@ -27,7 +27,7 @@ class PMTSingleGaussian(PDF):
         super().__init__(n_illuminations, function, parameters)
 
 
-@njit(fastmath=True, parallel=True)
+@njit(fastmath=True)
 def pmt_single_gaussian(x, eped, eped_sigma, pe, pe_sigma, lambda_):
     """Simple description of the SPE spectrum PDF for a traditional
     Photomultiplier Tube, with the underlying 1 photoelectron PDF described by
