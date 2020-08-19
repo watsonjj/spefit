@@ -17,7 +17,7 @@ Optimised framework for the fitting of [Single Photoelectron Spectra](https://gi
 - PDFs for the SPE spectra of both Photomultiplier Tubes and Silicon Photomultipliers
 - Runtime-selectable minimization cost definitions, optimised using numba
 - Simultaneous fitting of multiple datasets (e.g. containing different average illuminations) for better parameter constraining
-- Minimization routine utilising [iminuit](https://github.com/scikit-hep/iminuit) - Python frontend to the MINUIT2 C++ library
+- Minimization provided by [iminuit](https://github.com/scikit-hep/iminuit) - Python frontend to the MINUIT2 C++ library
 - Calculation of parameter errors and resulting p-value
 - Extendable to allow the inclusion of any additional SPE description and minimization cost definitions
 - Compatible with other minimization routines
