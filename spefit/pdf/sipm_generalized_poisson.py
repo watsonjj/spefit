@@ -19,8 +19,8 @@ class SiPMGeneralizedPoisson(PDF):
         """
         function = sipm_generalized_poisson
         parameters = dict(
-            pe0=PDFParameter(initial=0, limits=(-2, 2)),
-            pe0_sigma=PDFParameter(initial=0.1, limits=(0, 2)),
+            eped=PDFParameter(initial=0, limits=(-2, 2)),
+            eped_sigma=PDFParameter(initial=0.1, limits=(0, 2)),
             pe=PDFParameter(initial=1, limits=(-2, 3)),
             pe_sigma=PDFParameter(initial=0.1, limits=(0, 2)),
             opct=PDFParameter(initial=0.2, limits=(0, 1)),
@@ -52,7 +52,7 @@ def generalized_poisson(k, mu, opct):
 
 
 @njit(fastmath=True)
-def sipm_generalized_poisson(x, pe0, pe0_sigma, pe, pe_sigma, opct, lambda_):
+def sipm_generalized_poisson(x, eped, eped_sigma, pe, pe_sigma, opct, lambda_):
     """SPE spectrum PDF for a SiPM using Gaussian peaks with amplitudes given by
     a modified Poisson formula
 
@@ -62,9 +62,9 @@ def sipm_generalized_poisson(x, pe0, pe0_sigma, pe, pe_sigma, opct, lambda_):
     ----------
     x : ndarray
         The x values to evaluate at
-    pe0 : float
+    eped : float
         Distance of the zeroth peak (electronic pedestal) from the origin
-    pe0_sigma : float
+    eped_sigma : float
         Sigma of the zeroth peak, represents spread of electronic noise
     pe : float
         Distance of the first peak (1 photoelectron post opct) from the origin
@@ -92,9 +92,9 @@ def sipm_generalized_poisson(x, pe0, pe0_sigma, pe, pe_sigma, opct, lambda_):
             break
 
         # Combine spread of pedestal and pe peaks
-        total_sigma = sqrt(k * pe_sigma ** 2 + pe0_sigma ** 2)
+        total_sigma = sqrt(k * pe_sigma ** 2 + eped_sigma ** 2)
 
         # Evaluate probability at each value of x
-        spectrum += p * normal_pdf(x, pe0 + k * pe, total_sigma)
+        spectrum += p * normal_pdf(x, eped + k * pe, total_sigma)
 
     return spectrum
