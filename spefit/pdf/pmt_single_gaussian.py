@@ -2,12 +2,13 @@ from spefit.pdf.base import PDF, PDFParameter
 from spefit.common.stats import poisson, normal_pdf
 from numba import njit
 from math import exp, sqrt
+from functools import partial
 
 __all__ = ["PMTSingleGaussian", "pmt_single_gaussian"]
 
 
 class PMTSingleGaussian(PDF):
-    def __init__(self, n_illuminations: int):
+    def __init__(self, n_illuminations: int, disable_pedestal=False):
         """SPE PDF for a Photomultiplier Tube consisting of a single gaussian
         per photoelectron
 
@@ -15,8 +16,11 @@ class PMTSingleGaussian(PDF):
         ----------
         n_illuminations : int
             Number of illuminations to simultaneously fit
+        disable_pedestal : bool
+            Set to True if no pedestal peak exists in the charge spectrum
+            (e.g. when triggering on a threshold or "dark counting")
         """
-        function = pmt_single_gaussian
+        function = partial(pmt_single_gaussian, disable_pedestal=disable_pedestal)
         parameters = dict(
             eped=PDFParameter(initial=0, limits=(-2, 2)),
             eped_sigma=PDFParameter(initial=0.1, limits=(0, 2)),
@@ -28,7 +32,7 @@ class PMTSingleGaussian(PDF):
 
 
 @njit(fastmath=True)
-def pmt_single_gaussian(x, eped, eped_sigma, pe, pe_sigma, lambda_):
+def pmt_single_gaussian(x, eped, eped_sigma, pe, pe_sigma, lambda_, disable_pedestal):
     """Simple description of the SPE spectrum PDF for a traditional
     Photomultiplier Tube, with the underlying 1 photoelectron PDF described by
     a single gaussian
@@ -47,6 +51,9 @@ def pmt_single_gaussian(x, eped, eped_sigma, pe, pe_sigma, lambda_):
         Sigma of the 1 photoelectron peak
     lambda_ : float
         Poisson mean (average illumination in p.e.)
+    disable_pedestal : bool
+        Set to True if no pedestal peak exists in the charge spectrum
+        (e.g. when triggering on a threshold or "dark counting")
 
     Returns
     -------
@@ -54,18 +61,18 @@ def pmt_single_gaussian(x, eped, eped_sigma, pe, pe_sigma, lambda_):
         The y values of the total spectrum.
     """
     # Obtain pedestal peak
-    p_ped = exp(-lambda_)
+    p_ped = 0 if disable_pedestal else exp(-lambda_)
     spectrum = p_ped * normal_pdf(x, eped, eped_sigma)
 
-    pk_max = 0
+    p_max = 0  # Track when the peak probabilities start to become insignificant
 
-    # Loop over the possible total number of cells fired
+    # Loop over the possible total number of photoelectrons
     for k in range(1, 100):
         p = poisson(k, lambda_)  # Probability to get k avalanches
 
         # Skip insignificant probabilities
-        if p > pk_max:
-            pk_max = p
+        if p > p_max:
+            p_max = p
         elif p < 1e-4:
             break
 

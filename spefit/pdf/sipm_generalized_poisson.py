@@ -1,14 +1,14 @@
 from spefit.pdf.base import PDF, PDFParameter
 from spefit.common.stats import normal_pdf
-import numpy as np
 from numba import njit, vectorize, float64, int64
 from math import exp, sqrt, lgamma, log
+from functools import partial
 
-__all__ = ["SiPMGeneralizedPoisson", "generalized_poisson", "sipm_generalized_poisson"]
+__all__ = ["SiPMGeneralizedPoisson", "generalized_poisson", "sipm_gpoisson"]
 
 
 class SiPMGeneralizedPoisson(PDF):
-    def __init__(self, n_illuminations: int):
+    def __init__(self, n_illuminations: int, disable_pedestal=False):
         """SPE PDF for a SiPM utilising a modified Poisson to describe the
         optical crosstalk
 
@@ -16,8 +16,11 @@ class SiPMGeneralizedPoisson(PDF):
         ----------
         n_illuminations : int
             Number of illuminations to simultaneously fit
+        disable_pedestal : bool
+            Set to True if no pedestal peak exists in the charge spectrum
+            (e.g. when triggering on a threshold or "dark counting")
         """
-        function = sipm_generalized_poisson
+        function = partial(sipm_gpoisson, disable_pedestal=disable_pedestal)
         parameters = dict(
             eped=PDFParameter(initial=0, limits=(-2, 2)),
             eped_sigma=PDFParameter(initial=0.1, limits=(0, 2)),
@@ -52,7 +55,7 @@ def generalized_poisson(k, mu, opct):
 
 
 @njit(fastmath=True)
-def sipm_generalized_poisson(x, eped, eped_sigma, pe, pe_sigma, opct, lambda_):
+def sipm_gpoisson(x, eped, eped_sigma, pe, pe_sigma, opct, lambda_, disable_pedestal):
     """SPE spectrum PDF for a SiPM using Gaussian peaks with amplitudes given by
     a modified Poisson formula
 
@@ -74,15 +77,23 @@ def sipm_generalized_poisson(x, eped, eped_sigma, pe, pe_sigma, opct, lambda_):
         Optical crosstalk probability
     lambda_ : float
         Poisson mean (average illumination in p.e.)
+    disable_pedestal : bool
+        Set to True if no pedestal peak exists in the charge spectrum
+        (e.g. when triggering on a threshold or "dark counting")
 
     Returns
     -------
     spectrum : ndarray
         The y values of the total spectrum.
     """
-    spectrum = np.zeros_like(x)
-    p_max = 0
-    for k in range(100):
+    # Obtain pedestal peak
+    p_ped = 0 if disable_pedestal else exp(-lambda_)
+    spectrum = p_ped * normal_pdf(x, eped, eped_sigma)
+
+    p_max = 0  # Track when the peak probabilities start to become insignificant
+
+    # Loop over the possible total number of cells fired
+    for k in range(1, 100):
         p = generalized_poisson(k, lambda_, opct)
 
         # Skip insignificant probabilities

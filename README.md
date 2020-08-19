@@ -15,6 +15,8 @@ Optimised framework for the fitting of [Single Photoelectron Spectra](https://gi
 * Basic [numpy](https://numpy.org/) API
 * Runtime-selectable Probability Density Functions (PDFs), optimised using [numba](http://numba.pydata.org/)
 * PDFs for the SPE spectra of both Photomultiplier Tubes and Silicon Photomultipliers
+* Configuration of PDFs for the case where no pedestal peak exists (e.g. dark counting)
+* Estimation of SPE parameters for improved initial fit values
 * Runtime-selectable minimization cost definitions, optimised using numba
 * Simultaneous fitting of multiple datasets (e.g. containing different average illuminations) for better parameter constraining
 * Minimization provided by [iminuit](https://github.com/scikit-hep/iminuit) - Python frontend to the MINUIT2 C++ library

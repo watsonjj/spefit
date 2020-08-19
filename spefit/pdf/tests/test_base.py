@@ -25,9 +25,6 @@ def test_pdf_parameter():
 
 
 def test_pdf_class():
-    with pytest.raises(ValueError):
-        PDF(1)
-
     parameters = dict(
         mean=PDFParameter(initial=0, limits=(-2, 2)),
         sigma=PDFParameter(initial=0.1, limits=(0, 2)),
@@ -266,13 +263,24 @@ def test_iminuit_kwargs():
     assert iminuit_kwargs["fix_sigma1"] is True
 
 
-# noinspection PyPep8Naming
+# noinspection PyPep8Naming,PyArgumentList
 @pytest.mark.parametrize("PDFSubclass", PDF.__subclasses__())
-def test_pdf_function_subclasses(PDFSubclass):
+def test_pdf_subclasses(PDFSubclass):
     pdf = PDFSubclass(n_illuminations=1)
     x = np.linspace(-5, 100, 1000)
     y = pdf(x, np.array(list(pdf.initial.values())), 0)
     np.testing.assert_allclose(np.trapz(y, x), 1, rtol=1e-3)
+
+
+# noinspection PyPep8Naming,PyArgumentList
+@pytest.mark.parametrize("PDFSubclass", PDF.__subclasses__())
+def test_disable_pedestal(PDFSubclass):
+    pdf = PDFSubclass(n_illuminations=1, disable_pedestal=True)
+    x = np.linspace(-5, 100, 1000)
+    y = pdf(x, np.array(list(pdf.initial.values())), 0)
+    lambda_ = pdf.initial["lambda_0"]
+    pedestal_contribution = np.exp(-lambda_)
+    np.testing.assert_allclose(np.trapz(y, x), 1 - pedestal_contribution, rtol=1e-3)
 
 
 def test_from_name():

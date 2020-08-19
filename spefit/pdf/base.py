@@ -68,23 +68,21 @@ class PDF:
     def __init__(
         self,
         n_illuminations: int,
-        function: Callable = None,
-        parameters: Dict[str, PDFParameter] = None,
+        function: Callable,
+        parameters: Dict[str, PDFParameter],
     ):
         """Defines a function to be fit, and its corresponding parameters
 
         Parameters
         ----------
+        n_illuminations : int
+            Number of illuminations to fit simultaneously
         function : Callable
             Function defining the SPE spectra PDF relevant for the data to be fit
         parameters : dict
             Dict of ``PDFParameter``, with entries corresponding to the
             arguments of the pdf function
-        n_illuminations : int
-            Number of illuminations to fit simultaneously
         """
-        if function is None or parameters is None:
-            raise ValueError("PDF class must define the function and parameters")
 
         self._n_illuminations = n_illuminations
         self._function = function

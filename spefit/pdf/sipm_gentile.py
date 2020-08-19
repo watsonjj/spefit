@@ -3,12 +3,13 @@ from spefit.common.stats import poisson, normal_pdf
 from spefit.common.basic import binom
 from numba import njit
 from math import exp, sqrt
+from functools import partial
 
 __all__ = ["SiPMGentile", "sipm_gentile"]
 
 
 class SiPMGentile(PDF):
-    def __init__(self, n_illuminations: int):
+    def __init__(self, n_illuminations: int, disable_pedestal=False):
         """SPE PDF for a SiPM. Optical crosstalk is included by considering all
         the possible combinations that could result in N p.e. (as described in
         Gentile 2010 http://adsabs.harvard.edu/abs/2010arXiv1006.3263G)
@@ -17,8 +18,11 @@ class SiPMGentile(PDF):
         ----------
         n_illuminations : int
             Number of illuminations to simultaneously fit
+        disable_pedestal : bool
+            Set to True if no pedestal peak exists in the charge spectrum
+            (e.g. when triggering on a threshold or "dark counting")
         """
-        function = sipm_gentile
+        function = partial(sipm_gentile, disable_pedestal=disable_pedestal)
         parameters = dict(
             eped=PDFParameter(initial=0, limits=(-2, 2)),
             eped_sigma=PDFParameter(initial=0.1, limits=(0, 2)),
@@ -31,7 +35,7 @@ class SiPMGentile(PDF):
 
 
 @njit(fastmath=True)
-def sipm_gentile(x, eped, eped_sigma, pe, pe_sigma, opct, lambda_):
+def sipm_gentile(x, eped, eped_sigma, pe, pe_sigma, opct, lambda_, disable_pedestal):
     """PDF for the SPE spectrum of a SiPM as defined in Gentile 2010
     http://adsabs.harvard.edu/abs/2010arXiv1006.3263G
     (Afterpulsing is assumed to be negligible)
@@ -52,19 +56,20 @@ def sipm_gentile(x, eped, eped_sigma, pe, pe_sigma, opct, lambda_):
         Optical crosstalk probability
     lambda_ : float
         Poisson mean (average illumination in p.e.)
+    disable_pedestal : bool
+        Set to True if no pedestal peak exists in the charge spectrum
+        (e.g. when triggering on a threshold or "dark counting")
 
     Returns
     -------
     spectrum : ndarray
         The y values of the total spectrum
     """
-    # TODO: Handle cases where pedestal not included (dark noise spectrum)
-    # TODO: SES
     # Obtain pedestal peak
-    p_ped = exp(-lambda_)
+    p_ped = 0 if disable_pedestal else exp(-lambda_)
     spectrum = p_ped * normal_pdf(x, eped, eped_sigma)
 
-    pk_max = 0
+    pk_max = 0  # Track when the peak probabilities start to become insignificant
 
     # Loop over the possible total number of cells fired
     for k in range(1, 100):

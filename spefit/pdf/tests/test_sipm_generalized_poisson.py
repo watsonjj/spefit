@@ -1,6 +1,6 @@
 from spefit.pdf.sipm_generalized_poisson import (
     generalized_poisson,
-    sipm_generalized_poisson,
+    sipm_gpoisson,
 )
 import numpy as np
 
@@ -14,5 +14,10 @@ def test_generalized_poisson():
 
 def test_sipm_generalized_poisson():
     x = np.linspace(-1, 20, 1000)
-    y = sipm_generalized_poisson(x, 0.0, 0.2, 1.0, 0.1, 0.2, 1.0)
+    lambda_ = 1.0
+    y = sipm_gpoisson(x, 0.0, 0.2, 1.0, 0.1, 0.2, lambda_, False)
     np.testing.assert_allclose(np.trapz(y, x), 1, rtol=1e-3)
+
+    y = sipm_gpoisson(x, 0.0, 0.2, 1.0, 0.1, 0.2, lambda_, True)
+    pedestal_contribution = np.exp(-lambda_)
+    np.testing.assert_allclose(np.trapz(y, x), 1 - pedestal_contribution, rtol=1e-3)
