@@ -173,6 +173,14 @@ class UnbinnedNLL(Cost):
 
     errordef = 0.5
 
+    def __init__(self, pdf: PDF, charges: List[ChargeContainer]):
+        for charge in charges:
+            if charge.values is None:
+                raise ValueError(
+                    "Cannot perform UnbinnedNLL on pre-binned ChargeContainer"
+                )
+        super().__init__(pdf, charges)
+
     def __call__(self, parameters):
         likelihood = 0
         for i in range(self._n_illuminations):
