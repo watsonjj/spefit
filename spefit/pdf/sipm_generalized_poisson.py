@@ -51,6 +51,7 @@ def generalized_poisson(k, mu, opct):
     probability : float
     """
     mu_dash = mu + k * opct
+    # TODO: Use xlogy?
     return mu * exp((k - 1) * log(mu_dash) - mu_dash - lgamma(k + 1))
 
 
