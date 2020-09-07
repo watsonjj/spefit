@@ -4,10 +4,10 @@ from numba import njit, vectorize, float64, int64
 from math import exp, sqrt, lgamma, log
 from functools import partial
 
-__all__ = ["SiPMGeneralizedPoisson", "generalized_poisson", "sipm_gpoisson"]
+__all__ = ["SiPMModifiedPoisson", "modified_poisson", "sipm_mpoisson"]
 
 
-class SiPMGeneralizedPoisson(PDF):
+class SiPMModifiedPoisson(PDF):
     def __init__(self, n_illuminations: int, disable_pedestal=False):
         """SPE PDF for a SiPM utilising a modified Poisson to describe the
         optical crosstalk
@@ -20,7 +20,7 @@ class SiPMGeneralizedPoisson(PDF):
             Set to True if no pedestal peak exists in the charge spectrum
             (e.g. when triggering on a threshold or "dark counting")
         """
-        function = partial(sipm_gpoisson, disable_pedestal=disable_pedestal)
+        function = partial(sipm_mpoisson, disable_pedestal=disable_pedestal)
         parameters = dict(
             eped=PDFParameter(initial=0, limits=(-2, 2)),
             eped_sigma=PDFParameter(initial=0.1, limits=(0, 2)),
@@ -33,8 +33,8 @@ class SiPMGeneralizedPoisson(PDF):
 
 
 @vectorize([float64(int64, float64, float64)], fastmath=True)
-def generalized_poisson(k, mu, opct):
-    """Generalized Poisson probabilities for a given mean number per event
+def modified_poisson(k, mu, opct):
+    """Modified Poisson probabilities for a given mean number per event
     and per opct event.
 
     Parameters
@@ -56,7 +56,7 @@ def generalized_poisson(k, mu, opct):
 
 
 @njit(fastmath=True)
-def sipm_gpoisson(x, eped, eped_sigma, pe, pe_sigma, opct, lambda_, disable_pedestal):
+def sipm_mpoisson(x, eped, eped_sigma, pe, pe_sigma, opct, lambda_, disable_pedestal):
     """SPE spectrum PDF for a SiPM using Gaussian peaks with amplitudes given by
     a modified Poisson formula
 
@@ -95,7 +95,7 @@ def sipm_gpoisson(x, eped, eped_sigma, pe, pe_sigma, opct, lambda_, disable_pede
 
     # Loop over the possible total number of cells fired
     for k in range(1, 100):
-        p = generalized_poisson(k, lambda_, opct)
+        p = modified_poisson(k, lambda_, opct)
 
         # Skip insignificant probabilities
         if p > p_max:

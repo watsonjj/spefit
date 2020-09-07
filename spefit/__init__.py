@@ -5,7 +5,7 @@ from .pdf import (
     PDF,
     PDFParameter,
     PMTSingleGaussian,
-    SiPMGeneralizedPoisson,
+    SiPMModifiedPoisson,
     SiPMGentile,
 )
 from .fitter import minimize_with_iminuit, CameraFitter
@@ -19,7 +19,7 @@ __all__ = [
     "PDF",
     "PDFParameter",
     "PMTSingleGaussian",
-    "SiPMGeneralizedPoisson",
+    "SiPMModifiedPoisson",
     "SiPMGentile",
     "minimize_with_iminuit",
     "CameraFitter",
