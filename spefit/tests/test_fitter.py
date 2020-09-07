@@ -27,6 +27,7 @@ def test_minimize_with_iminuit(example_pdf, example_params, example_charges):
 def test_camera_fitter(CostSubclass, example_pdf, example_params, charge_arrays):
     name = CostSubclass.__name__
     fitter = CameraFitter(pdf=example_pdf, n_bins=60, range_=(-2, 2), cost_name=name)
+    assert fitter.n_illuminations == 2
     fitter._apply_pixel(charge_arrays, 0)
     assert len(fitter.pixel_values) == 1
     assert len(fitter.pixel_errors) == 1

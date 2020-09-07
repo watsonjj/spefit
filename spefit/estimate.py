@@ -4,10 +4,10 @@ initial values for the minimisation
 """
 
 import numpy as np
+from numpy.polynomial.polynomial import polyfit
 from numba import njit
 from scipy.signal import find_peaks
 from scipy.optimize import curve_fit
-from scipy.stats import linregress
 from functools import partial
 
 __all__ = ["find_spe_peaks", "calculate_peak_ratio", "estimate_spe_parameters"]
@@ -97,43 +97,40 @@ def calculate_peak_ratio(k, lambda_, sigma0, sigma1):
     )
 
 
-def estimate_spe_parameters(x, y, disable_pedestal: bool = False):
+def estimate_spe_parameters(peak_x, peak_y, peak_sigma, disable_pedestal: bool = False):
     """
-    Estimate the parameters of the SPE spectrum. Useful for improving initial
-    guess before minimization.
+    Estimate the parameters of the SPE spectrum from the peak positions.
+    Useful for improving initial guess before minimization.
 
-    Uses scipy.signal.find_peaks to extract the peaks from the SPE
+    Uses scipy.signal.find_peaks to extract the peaks from the SPE. This
+    approach requires multiple distinctive peaks in the SPE spectrum
 
     Parameters
     ----------
-    x : ndarray
-        X coordinates of spectrum
-    y : ndarray
-        Y coordinates of spectrum
+    peak_x : ndarray
+        X coordinate (location) of each SPE peak
+    peak_y : ndarray
+        Y coordinate (height) of each SPE peak
+    peak_sigma : ndarray
+        Sigma (standard deviation) of each SPE peak
     disable_pedestal : bool
         Set to True if no pedestal peak exists in the charge spectrum
         (e.g. when triggering on a threshold or "dark counting")
 
     Returns
     -------
-    eped : float
-        Estimate of the position of the pedestal peak
-    eped_sigma : float
-        Estimate of the width of the pedestal peak
-    pe : float
-        Estimate of the position of the 1 p.e. peak
-    pe_sigma : float
-        Estimate of the width of the photoelectron peak
-    lambda_ : float
-        Estimate of the average illumination in photoelectrons/event
+    estimates : dict
+        Dict containing the estimated values for the SPE parameters
     """
-    peak_x, peak_y, peak_sigma = find_spe_peaks(x, y)
     first_peak_pe = 1 if disable_pedestal else 0  # p.e. of first peak in spectrum
     peak_pe = np.arange(first_peak_pe, len(peak_x) + first_peak_pe)  # p.e. of each peak
 
     # Linear regression to estimate photoelectron peak properties
-    pe, eped, _, _, _ = linregress(peak_pe, peak_x)
-    pe_sigma, eped_sigma, _, _, _ = np.sqrt(linregress(peak_pe, peak_sigma ** 2))
+    eped, pe = polyfit(peak_pe, peak_x, 1)
+    var = np.array(polyfit(peak_pe, peak_sigma ** 2, 1))
+    if (var < 0).any():  # Manually define if trouble in estimating
+        var = np.array([(pe * 0.2) ** 2, (pe * 0.1) ** 2])
+    eped_sigma, pe_sigma = np.sqrt(var)
 
     # Least squares to estimate the average illumination from the ratios of peak height
     peak_ratio_k = peak_pe[1:]
@@ -141,4 +138,6 @@ def estimate_spe_parameters(x, y, disable_pedestal: bool = False):
     f = partial(calculate_peak_ratio, sigma0=eped_sigma, sigma1=pe_sigma)
     lambda_ = curve_fit(f, peak_ratio_k, peak_ratio, bounds=(0, 5), p0=1)[0][0]
 
-    return eped, eped_sigma, pe, pe_sigma, lambda_
+    return dict(
+        eped=eped, eped_sigma=eped_sigma, pe=pe, pe_sigma=pe_sigma, lambda_=lambda_
+    )

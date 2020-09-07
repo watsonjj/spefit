@@ -2,7 +2,7 @@ from spefit import PDF, Cost, ChargeContainer
 from typing import List, Tuple, Dict
 import iminuit
 import numpy as np
-from tqdm import trange
+from tqdm.auto import trange
 import warnings
 from multiprocessing import Pool, Manager
 from functools import partial
@@ -71,6 +71,10 @@ class CameraFitter:
         self.pixel_errors = manager.dict()
         self.pixel_scores = manager.dict()
         self.pixel_arrays = manager.dict()
+
+    @property
+    def n_illuminations(self):
+        return self._pdf.n_illuminations
 
     def _update_initial(self, charges: List[ChargeContainer]):
         """

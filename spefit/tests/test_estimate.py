@@ -50,10 +50,25 @@ def test_calculate_peak_ratio():
 @pytest.mark.parametrize("disable_pedestal", [True, False])
 def test_estimate_spe_parameters(disable_pedestal):
     x, y, parameters = get_test_x_y(disable_pedestal)
-    estimates = estimate_spe_parameters(x, y, disable_pedestal)
+    peak_x, peak_y, peak_sigma = find_spe_peaks(x, y)
+    estimates = estimate_spe_parameters(peak_x, peak_y, peak_sigma, disable_pedestal)
 
-    np.testing.assert_allclose(estimates[0], parameters[0], atol=1e-2)
-    np.testing.assert_allclose(estimates[1], parameters[1], rtol=1e-3)
-    np.testing.assert_allclose(estimates[2], parameters[2], rtol=1e-3)
-    np.testing.assert_allclose(estimates[3], parameters[3], rtol=1e-3)
-    np.testing.assert_allclose(estimates[4], parameters[4], rtol=1e-3)
+    np.testing.assert_allclose(estimates["eped"], parameters[0], atol=1e-2)
+    np.testing.assert_allclose(estimates["eped_sigma"], parameters[1], rtol=1e-3)
+    np.testing.assert_allclose(estimates["pe"], parameters[2], rtol=1e-3)
+    np.testing.assert_allclose(estimates["pe_sigma"], parameters[3], rtol=1e-3)
+    np.testing.assert_allclose(estimates["lambda_"], parameters[4], rtol=1e-3)
+
+
+@pytest.mark.parametrize("disable_pedestal", [True, False])
+def test_estimate_spe_parameters_poor_sigma(disable_pedestal):
+    x, y, parameters = get_test_x_y(disable_pedestal)
+    peak_x, peak_y, peak_sigma = find_spe_peaks(x, y)
+    peak_sigma = -peak_sigma * 1j  # Force into if condition
+    estimates = estimate_spe_parameters(peak_x, peak_y, peak_sigma, disable_pedestal)
+
+    np.testing.assert_allclose(estimates["eped"], parameters[0], atol=1e-2)
+    np.testing.assert_allclose(estimates["eped_sigma"], 2 * 0.2, rtol=1e-3)
+    np.testing.assert_allclose(estimates["pe"], parameters[2], rtol=1e-3)
+    np.testing.assert_allclose(estimates["pe_sigma"], 2 * 0.1, rtol=1e-3)
+    np.testing.assert_allclose(estimates["lambda_"], parameters[4], rtol=1e-1)
