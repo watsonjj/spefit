@@ -9,7 +9,7 @@ __all__ = ["SiPMModifiedPoisson", "modified_poisson", "sipm_mpoisson"]
 
 class SiPMModifiedPoisson(PDF):
     def __init__(self, n_illuminations: int, disable_pedestal=False):
-        """SPE PDF for a SiPM utilising a modified Poisson to describe the
+        """SPE PDF for a SiPM utilising a modified Poisson to include the
         optical crosstalk
 
         Parameters
