@@ -25,6 +25,19 @@ Optimised framework for the fitting of [Single Photoelectron Spectra](https://gi
 * Compatible with other minimization routines
 * Convenience class provided for the parallel processing of cameras containing multiple photomultiplier pixels
 
+## Currently Implemented:
+### SPE formula:
+
+- PMT Single Gaussian
+- SiPM Gentile
+- SiPM Modified Poisson
+
+### Minimization Cost functions:
+
+- Unbinned Negative Log-likelihood
+- Binned Negative Log-likelihood
+- Least Squares
+
 ## Installation
 
 `pip install spefit`
