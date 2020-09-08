@@ -27,8 +27,19 @@ Optimised framework for the fitting of [Single Photoelectron Spectra](https://gi
 
 ## Installation
 
+`pip install spefit`
+
 ## Usage
 
-(example)
+With a numpy array of size (n_events) called `charge_array`, containing the measured charges from the low illumination of a photomultiplier, the parameters of the SPE spectra can be extracted with:
 
-## Tutorials
+```python
+from spefit import ChargeContainer, PMTSingleGaussian, BinnedNLL, minimize_with_iminuit
+
+charges = [ChargeContainer(charge_array, n_bins=100, range_=(-3, 6))]
+pdf = PMTSingleGaussian(n_illuminations=1)
+cost = BinnedNLL(pdf, charges)
+values, errors = minimize_with_iminuit(cost)
+```
+
+Jupyter notebook demonstrations are provided in [tutorials](tutorials).
