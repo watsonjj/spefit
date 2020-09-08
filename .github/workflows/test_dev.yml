@@ -6,7 +6,7 @@ on:
     branches:
     - '*'
 
-name: tests
+name: test_dev
 
 jobs:
   build:
