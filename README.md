@@ -1,6 +1,6 @@
 # spefit 
 
-![tests](https://github.com/watsonjj/spefit/workflows/tests/badge.svg) [![codecov](https://codecov.io/gh/watsonjj/spefit/branch/master/graph/badge.svg)](https://codecov.io/gh/watsonjj/spefit) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/43250a5b5ee54103be45d26de93bdca1)](https://www.codacy.com/manual/watsonjj/spefit?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=watsonjj/spefit&amp;utm_campaign=Badge_Grade) <a href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a> [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/watsonjj/spefit/master?filepath=tutorials)
+![tests](https://github.com/watsonjj/spefit/workflows/tests/badge.svg) [![codecov](https://codecov.io/gh/watsonjj/spefit/branch/master/graph/badge.svg)](https://codecov.io/gh/watsonjj/spefit) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/43250a5b5ee54103be45d26de93bdca1)](https://www.codacy.com/manual/watsonjj/spefit?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=watsonjj/spefit&amp;utm_campaign=Badge_Grade) <a href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a> ![PyPI](https://img.shields.io/pypi/v/spefit) [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/watsonjj/spefit/master?filepath=tutorials)
 
 Optimised framework for the fitting of [Single Photoelectron Spectra](https://github.com/watsonjj/spefit/wiki/Single-Photoelectron-spectra) (SPE) in order to characterize the properties of photomultipliers which influence the measured illumination response.
 
@@ -25,10 +25,34 @@ Optimised framework for the fitting of [Single Photoelectron Spectra](https://gi
 * Compatible with other minimization routines
 * Convenience class provided for the parallel processing of cameras containing multiple photomultiplier pixels
 
+## Currently Implemented:
+### SPE formula:
+
+- PMT Single Gaussian
+- SiPM Gentile
+- SiPM Modified Poisson
+
+### Minimization Cost functions:
+
+- Unbinned Negative Log-likelihood
+- Binned Negative Log-likelihood
+- Least Squares
+
 ## Installation
+
+`pip install spefit`
 
 ## Usage
 
-(example)
+With a numpy array of size (n_events) called `charge_array`, containing the measured charges from the low illumination of a photomultiplier, the parameters of the SPE spectra can be extracted with:
 
-## Tutorials
+```python
+from spefit import ChargeContainer, PMTSingleGaussian, BinnedNLL, minimize_with_iminuit
+
+charges = [ChargeContainer(charge_array, n_bins=100, range_=(-3, 6))]
+pdf = PMTSingleGaussian(n_illuminations=1)
+cost = BinnedNLL(pdf, charges)
+values, errors = minimize_with_iminuit(cost)
+```
+
+Jupyter notebook demonstrations are provided in [tutorials](tutorials).
