@@ -182,6 +182,8 @@ class UnbinnedNLL(Cost):
         super().__init__(pdf, charges)
 
     def __call__(self, parameters):
+        if np.isnan(parameters).any():
+            return np.inf
         likelihood = 0
         for i in range(self._n_illuminations):
             f = self._pdf(self._charges[i].values, parameters, i)
@@ -208,6 +210,8 @@ class BinnedNLL(Cost):
     errordef = 0.5
 
     def __call__(self, parameters):
+        if np.isnan(parameters).any():
+            return np.inf
         likelihood = 0
         for i in range(self._n_illuminations):
             f_y = self._pdf(self._charges[i].between, parameters, i)
@@ -230,6 +234,8 @@ class LeastSquares(Cost):
     errordef = 1
 
     def __call__(self, parameters):
+        if np.isnan(parameters).any():
+            return np.inf
         chi2 = 0
         for i in range(self._n_illuminations):
             f_y = self._pdf(self._charges[i].between, parameters, i)
