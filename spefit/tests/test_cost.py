@@ -91,3 +91,11 @@ def test_from_name(example_pdf, example_charges):
 
     with pytest.raises(ValueError):
         Cost.from_name("NULL", example_pdf, example_charges)
+
+
+@pytest.mark.parametrize("CostSubclass", Cost.__subclasses__())
+def test_nan(CostSubclass, example_pdf, example_charges, example_params, incorrect):
+    example_params = example_params.copy()
+    example_params[0] = np.nan
+    cost = CostSubclass(example_pdf, example_charges)
+    assert np.isinf(cost(example_params))
